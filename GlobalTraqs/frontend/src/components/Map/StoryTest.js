@@ -61,6 +61,7 @@ export class Story extends Component {
       storyId: "",
       title: "",
       description: "",
+      category: "",
       startDate: new Date(),
       endDate: new Date(),
       startDateFormatted: "",
@@ -146,6 +147,7 @@ export class Story extends Component {
 
         this.setState({
           userStory: response.data,
+          category: response.data.category,
           title: response.data.title,
           description: response.data.description,
           startDate: start,
@@ -248,9 +250,10 @@ export class Story extends Component {
       });
   }
 
-  onUpdate = (title, description, startDate, endDate, formattedStartDate, formattedEndDate) => {
+  onUpdate = (category, title, description, startDate, endDate, formattedStartDate, formattedEndDate) => {
 
     this.setState({
+        category: category,
         title: title,
         description: description,
         startDate: startDate,
@@ -289,6 +292,7 @@ export class Story extends Component {
         let endDateFormatted = selectedEndMonthName + " " + end.getDate() + ", " + end.getFullYear();
         this.setState({
             userStory: response.data,
+            category: response.data.category,
             title: response.data.title,
             description: response.data.description,
             startDate: start,
@@ -407,12 +411,13 @@ export class Story extends Component {
       <div className="container-fluid" style={divStyle2}>
         <h2> {isAuthenticated ? flaggedButton : ""}</h2>
           <div style={{ height: '45%'}}>
-            <Pins />
+            <Pins latitude={this.state.userStory.latitude} longitude={this.state.userStory.longitude}/>
           </div>
 
         <div className="container-fluid" style={storyBody}>
           {this.state.showEditForm && (
             <EditPin
+              category={this.state.category}
               title={this.state.title}
               description={this.state.description}
               userlat={this.state.userStory.latitude}
