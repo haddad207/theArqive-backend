@@ -45,7 +45,12 @@ export default function MapDashboard() {
     width: "100%"
   });
   const [divStyle1, setdivStyle1] = useState({
-    height: "40vh",
+    height: "100%",
+    width: "100%",
+    left: "0"
+  });
+  const [mapContainerStyle, setMapContainerStyle] = useState({
+    height: "100%",
     width: "100%",
     left: "0"
   });
@@ -60,6 +65,7 @@ export default function MapDashboard() {
 
   const dispatch = useDispatch();
   const [userRoleVerified, setUserRoleVerified] = useState(false);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -330,6 +336,8 @@ export default function MapDashboard() {
               setPinData={setPinData}
               pinCluster={pinCluster}
               setPinCluster={setPinCluster}
+              mapContainerStyle={divStyle1}
+              setMapContainerStyle={setMapContainerStyle}
             />
           </Route>
           <Route path="/story">
@@ -375,6 +383,8 @@ export default function MapDashboard() {
               isAuthenticated={isAuthenticated}
               setPinData={setPinData}
               isIndividualStoryPage={true}
+              mapContainerStyle={mapContainerStyle}
+              setMapContainerStyle={setMapContainerStyle}
             />
             <StoryDisplay
               placement={placement}
@@ -404,6 +414,9 @@ export default function MapDashboard() {
               flagCommentToggle={flagCommentToggle}
               flagCommentModalState={flagCommentModalState}
               onFlagCommentSubmit={onFlagCommentSubmit}
+              setMapDivStyle={setdivStyle1}
+              setMapContainerStyle={setMapContainerStyle}
+              mapContainerStyle={mapContainerStyle}
             />
             </div>
           </Route>
@@ -421,9 +434,22 @@ export default function MapDashboard() {
 }
 function StoryDisplay(props) {
   let match = useRouteMatch();
+  let [storyStyle, setStoryStyle] = useState({  top: '100%' });
+
+  // change the map & story page styling for story slide up effect
+  useEffect(() => {
+    console.log("here trying to set the style");
+    console.log(props.mapContainerStyle);
+    setStoryStyle({
+      top: "45%"
+    });
+    props.setMapContainerStyle({
+      height: "45%"
+    })
+  }, []);
 
   return (
-    <div>
+    <div id={"story-page"} style={storyStyle}>
       <Switch>
         <Route path={`${match.path}/:id`}>
           <IndividualStory {...props} />
@@ -443,6 +469,7 @@ function IndividualStory(props) {
   const auth = useSelector(state => state.auth);
   const { isAuthenticated, user } = auth;
   const userid = isAuthenticated ? user.id : false;
+
   useEffect(() => {
     dispatch(getPin(id, userid));
     props.setuserComment({

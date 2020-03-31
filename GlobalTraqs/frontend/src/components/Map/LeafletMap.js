@@ -128,6 +128,8 @@ const LeafletMap = props => {
   };
 
   const centerMarker = marker => {
+    mapInstance.leafletElement.panTo([marker.latitude, marker.longitude]);
+
     props.setPlacement({
       id: marker.id,
       userlat: marker.latitude,
@@ -153,6 +155,9 @@ const LeafletMap = props => {
 
   // used for adding the map reference for fly to and address search
   useEffect(() => {
+    console.log("map container style");
+    console.log(props.mapContainerStyle);
+
     if (mapInstance) {
       let map = mapInstance.leafletElement;
       props.setMapReference(mapInstance.leafletElement);
@@ -161,8 +166,13 @@ const LeafletMap = props => {
     }
   }, [mapInstance]);
 
+  useEffect(() => {
+    console.log("setting map container style");
+    props.setMapContainerStyle({ height: "100%"});
+  },[]);
+
   return (
-    <div className="map-container" style={props.divStyle}>
+    <div className="map-container" style={props.mapContainerStyle}>
       {props.setPinDeleted ? props.setPinDeleted(false) : ""}{" "}
       <Map
         center={[props.placement.userlat, props.placement.userlng]}

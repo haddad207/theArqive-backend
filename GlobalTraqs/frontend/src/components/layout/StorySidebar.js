@@ -119,6 +119,7 @@ function StorySidebar(props)  {
                    </div>
                }
                open={props.storySidebarOpen}
+               onSetOpen={onSetSidebarOpen}
                pullRight={true}
                styles=
                    {{
