@@ -280,6 +280,7 @@ export default function MapDashboard() {
                 maplink={"/story"}
                 pinData={pinData}
                 setPinData={setPinData}
+                pins={pins}
                 storySidebarOpen={storySidebarOpen}
                 setStorySidebarOpen={setStorySidebarOpen}
                 isAuthenticated={isAuthenticated}
@@ -291,6 +292,7 @@ export default function MapDashboard() {
                 setDeleteConfirmation={setDeleteConfirmation}
                 pinCluster={pinCluster}
                 setPinCluster={setPinCluster}
+                setSidebarOpen={setSidebarOpen}
               />
             </div>
             <LeafletMap

@@ -223,18 +223,23 @@ const LeafletMap = props => {
         </Control>
 
         <MarkerClusterGroup
-            spiderfyOnMaxZoom={false}
+            //set to false for marker cluster
+            // spiderfyOnMaxZoom={false}
+            spiderfyOnMaxZoom={true}
             maxClusterRadius={40}
-            onClusterClick={(e) => {
-              if(mapInstance.leafletElement.getZoom() > 24) {
-                let markers = e.layer.getAllChildMarkers();
-                console.log(markers);
-                console.log(mapInstance.leafletElement.getZoom() + " is the zoom");
-                props.setPinData(markers);
-                props.setPinCluster(true);
-                props.setStorySidebarOpen(true);
-              }
-            }}
+            // commenting out marker clustering - needs to be refactored
+            // onClusterClick={(e) => {
+            //     console.log("zoooom");
+            //     console.log(mapInstance.leafletElement.getZoom());
+            //   if(mapInstance.leafletElement.getZoom() > 16) {
+            //     let markers = e.layer.getAllChildMarkers();
+            //     console.log(markers);
+            //     console.log(mapInstance.leafletElement.getZoom() + " is the zoom");
+            //     props.setPinData(markers);
+            //     props.setPinCluster(true);
+            //     props.setStorySidebarOpen(true);
+            //   }
+            // }}
         >
 
           {props.pins.map((marker, index) => {
