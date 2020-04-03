@@ -15,7 +15,8 @@ import sys
 #     class Meta:
 #         delimiter = ";"
 from rest_framework.fields import empty
-
+# run the below command in the Django Console while connected to the AWS db
+# exec(open('old_story_upload.py').read())
 
 def format_date(date):
     split = date.split("/")
