@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addPin } from "../../../actions/pins";
-import moment from "moment";
+import {addPin, getMaxPinDate, getMinPinDate} from "../../../actions/pins";
 
 const useAddPinForm = callback => {
   const auth = useSelector(state => state.auth);
@@ -19,7 +18,10 @@ const useAddPinForm = callback => {
     endDate: new Date(),
     anonradius: 1,
     title: "",
-    description: ""
+    description: "",
+    postDate: new Date(),
+    lastEditDate: new Date(),
+    lastPersonEdit: isAuthenticated ? user.id : null
   });
 
   const handleAddPinSubmit = e => {
@@ -42,6 +44,8 @@ const useAddPinForm = callback => {
 
     dispatch(addPin(submit));
     callback();
+    dispatch(getMaxPinDate());
+    dispatch(getMinPinDate());
     setmodalstate(!modalState);
     setaddPinValues({
       category: 1,
@@ -51,7 +55,10 @@ const useAddPinForm = callback => {
       endDate: new Date(),
       anonradius: 1,
       title: "",
-      description: ""
+      description: "",
+      postDate: new Date(),
+      lastEditDate: new Date(),
+      lastPersonEdit: isAuthenticated ? user.id : null
     });
   };
 

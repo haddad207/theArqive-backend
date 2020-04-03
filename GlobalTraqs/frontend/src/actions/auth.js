@@ -10,9 +10,11 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  GET_FLAG_STATE
+  GET_FLAG_STATE,
+  USER_SELF_DELETE,
+  FLAG_COMMENT,
+  REMOVE_FLAG_COMMENT
 } from "./types";
-
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {
@@ -56,10 +58,12 @@ export const login = (username, password) => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+      // dispatch(returnErrors(err.response.data, err.response.status));
       dispatch({
-        type: LOGIN_FAIL
+        type: LOGIN_FAIL,
+        payload: err.response.data
       });
+      console.log("login failed");
     });
 };
 
@@ -82,12 +86,16 @@ export const register = ({ username, password, email }) => dispatch => {
         type: REGISTER_SUCCESS,
         payload: res.data
       });
+      console.log(res.data);
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+      //dispatch(returnErrors(err.data, err.status));
       dispatch({
-        type: REGISTER_FAIL
+        type: REGISTER_FAIL,
+        payload: err.response.data
       });
+      console.log(err.response.data);
+      //alert("Username/Email already exists");
     });
 };
 
@@ -124,4 +132,46 @@ export const tokenConfig = getState => {
   }
 
   return config;
+};
+
+// self Delete
+export const userSelfDelete = () => (dispatch, getState) => {
+  // User Loading
+
+  axios
+    .delete("/api/auth/user", tokenConfig(getState))
+    .then(res => {
+      dispatch({
+        type: USER_SELF_DELETE,
+        payload: res.data
+      });
+    })
+    .catch(err => {
+      dispatch(returnErrors(err.response.data, err.response.status));
+    });
+};
+
+export const userFlagComment = userFlag => dispatch => {
+  axios
+    .post(`/api/flagcomment/`, userFlag)
+    .then(res => {
+      dispatch({
+        type: FLAG_COMMENT,
+        payload: res.data
+      });
+    })
+    .catch(error => console.log(error));
+};
+
+export const delFlagComment = id => dispatch => {
+  axios
+    .delete(`/api/flagcomment/${id}/`)
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: REMOVE_FLAG_COMMENT,
+        payload: id
+      });
+    })
+    .catch(error => console.log(error));
 };

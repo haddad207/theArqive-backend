@@ -14,6 +14,7 @@ import Upvote from "./Upvote";
 import Flag from "./Flag";
 import Moment from "react-moment";
 import Markup from "interweave";
+import FlagReportModal from "./FlagReportModal";
 
 const storyBody = {
   paddingTop: "50px",
@@ -21,83 +22,90 @@ const storyBody = {
   paddingRight: "50px"
 };
 function Story(props) {
-    console.log("edit pin is ");
-    console.log(props.editPin);
-
   const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  console.log(props.pin);
-  const { isAuthenticated, user } = auth;
 
-  const [flagState, setflagState] = useState(false);
+  const { isAuthenticated, user } = auth;
 
   const upvoteButoon = <Link to="/login"> &nbsp;Login to upvote!</Link>;
 
-
   if (props.pinDeleted) {
-      props.setPinDeleted(false);
-      return <Redirect to="/test" />;
+    props.setPinDeleted(false);
+    return <Redirect to="/test" />;
   }
 
   let canManagePin = false;
 
   if (props.isAuthenticated) {
-      if (props.user.id == props.pin.owner || props.userRoleVerified) {
-        canManagePin = true;
-      }
+    if (props.user.id == props.pin.owner || props.userRoleVerified) {
+      canManagePin = true;
+    }
   }
 
   //console.log(pin.flaggerstory);
   return (
     <div className="container-fluid" style={storyBody}>
-         {canManagePin ? (
-           <div>
-               <div className="admin-moderator-edit">
-                   <button
-                       type="button"
-                       className="btn btn-primary btn-sm"
-                       onClick={e => {
-                            props.seteditPin({
-                                    id: props.pin.id,
-                                    title: props.pin.title,
-                                    description: props.pin.description,
-                                    category: props.pin.category
-                                });
-                           props.seteditpinmodalState(!props.editpinmodalState)
-                       }}
-                   >
-                       Edit
-                   </button>
-               </div>
-               <button
-                   type="button"
-                   className="btn btn-primary btn-sm"
-                   onClick={e =>
-                       props.setDeleteConfirmation(!props.deleteConfirmation)
-                   }
-               >
-                   Delete
-               </button>
-           </div>
-       ) : null}
-      {" "}
+      {canManagePin ? (
+        <div>
+          <div className="admin-moderator-edit">
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={e => {
+                props.seteditPin({
+                  id: props.pin.id,
+                  title: props.pin.title,
+                  description: props.pin.description,
+                  category: props.pin.category
+                });
+                props.seteditpinmodalState(!props.editpinmodalState);
+              }}
+            >
+              Edit
+            </button>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={e =>
+              props.setDeleteConfirmation(!props.deleteConfirmation)
+            }
+          >
+            Delete
+          </button>
+        </div>
+      ) : null}{" "}
       <h2>
         <strong>{props.pin.title}</strong>
       </h2>
       <p>
         {" "}
-        {props.pin.startDate ? <Moment format="MM/DD/YYYY">{props.pin.startDate}</Moment> : "No Start Date"} -{" "}
-        {props.pin.endDate ? <Moment format="MM/DD/YYYY">{props.pin.endDate}</Moment> : "No End Date"}{" "}
+        {props.pin.startDate ? (
+          <Moment format="MM/DD/YYYY">{props.pin.startDate}</Moment>
+        ) : (
+          "No Start Date"
+        )}{" "}
+        -{" "}
+        {props.pin.endDate ? (
+          <Moment format="MM/DD/YYYY">{props.pin.endDate}</Moment>
+        ) : (
+          "No End Date"
+        )}{" "}
       </p>
       {/* <p>By: {authorName}</p> */}
       {props.pin.is_anonymous_pin ? (
         <p>By: Anonymous</p>
       ) : (
-        <p>By: {props.pin.username}</p>
+        <Link
+          style={{ textDecoration: "inherit" }}
+          to={`/users/${props.pin.owner}`}
+        >
+          <p>By: {props.pin.username}</p>
+        </Link>
       )}
       <h6>
         {/* {props.pin.updooots} upvotes */}
-        {props.pin.updooots} upvotes
+        {props.pin.updooots} favorites
         {/* need to figure out a way to update upvotes maybe websockets  */}
         {props.isAuthenticated
           ? props.pin && props.pin.updotes && <Upvote {...props} />
@@ -120,6 +128,25 @@ function Story(props) {
           userComment={props.userComment}
           setuserComment={props.setuserComment}
           onDeleteComment={props.onDeleteComment}
+          toggle={props.flagCommentToggle}
+        />
+      )}
+      {props.isAuthenticated && (
+        <FlagReportModal
+          flagForm={props.flagForm}
+          toggle={props.flagToggle}
+          modalState={props.flagModalState}
+          onSubmit={props.onFlagSubmit}
+          handleChange={props.handleFlagFormChange}
+        />
+      )}
+      {props.isAuthenticated && (
+        <FlagReportModal
+          flagForm={props.flagForm}
+          toggle={props.flagCommentToggle}
+          modalState={props.flagCommentModalState}
+          onSubmit={props.onFlagCommentSubmit}
+          handleChange={props.handleFlagFormChange}
         />
       )}
     </div>

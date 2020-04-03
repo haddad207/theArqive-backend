@@ -1,4 +1,5 @@
-from rest_framework import filters
+from requests import Response
+from rest_framework import filters, status
 from django.db.models import IntegerField
 from django.db.models import Case, CharField, Value
 from django.db.models import F, Q, When
@@ -10,11 +11,25 @@ import django_filters
 from django_filters import FilterSet, Filter
 from django_filters.fields import Lookup
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
+
 from .serializers import PinSerializer
-from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, photo, Faq, aboutUs
+from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
 from rest_framework import viewsets, permissions
-from .serializers import PinSerializer, CategorySerializer, upVoteStorySerializer, FlagStorySerializer, CommentStorySerializer, AboutUsSerializer, FaqSerializer, PhotoSerializer
+from .serializers import PinSerializer, CategorySerializer, upVoteStorySerializer, FlagStorySerializer, \
+    CommentStorySerializer, AboutUsSerializer, FaqSerializer, PhotoSerializer, PinFlaggedSerializer, \
+    FlagCommentSerializer
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import RetrieveAPIView
+
+
 # catalog viewset
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class DateFilter(FilterSet):
@@ -44,6 +59,18 @@ class ListFilter(Filter):
 
 
 # use the list filter above on the category field to match for or cases
+class PinCoordFilter(FilterSet):
+    latitude_gte = django_filters.NumberFilter(
+        field_name="latitude", lookup_expr='gte')
+    latitude_lte = django_filters.NumberFilter(
+        field_name="latitude", lookup_expr='lte')
+    longitude_gte = django_filters.NumberFilter(
+        field_name="longitude", lookup_expr='gte')
+    longitude_lte = django_filters.NumberFilter(
+        field_name="longitude", lookup_expr='lte')
+
+
+# use the list filter above on the category field to match for or cases
 class PinSearchFilter(FilterSet):
     categories = ListFilter(field_name='category', lookup_expr='in')
 
@@ -55,10 +82,6 @@ class PinSearchFilter(FilterSet):
         field_name="endDate", lookup_expr='gte')
     endDate_lte = django_filters.DateTimeFilter(
         field_name="endDate", lookup_expr='lte')
-
-    class Meta:
-        model = pin
-        fields = ('categories',)
 
 
 class PinViewSet(viewsets.ModelViewSet):
@@ -72,13 +95,12 @@ class PinViewSet(viewsets.ModelViewSet):
         #     default=Value(0),
         #     output_field=IntegerField()
         # )),
-        #updooots=Coalesce(Sum('updotes__upvote'), Value(0))
+        # updooots=Coalesce(Sum('updotes__upvote'), Value(0))
         updooots=Sum(Case(
             When(updotes__upvote=True, then=1),
             default=Value(0),
             output_field=IntegerField()
         ))
-
 
     )
 
@@ -99,6 +121,23 @@ class PinSearchViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     filter_class = PinSearchFilter
     search_fields = ['title', 'description']
+
+
+class MinPinDate(viewsets.ModelViewSet):
+    queryset = pin.objects.all().order_by("startDate")[:1]
+    serializer_class = PinSerializer
+
+
+class MaxPinDate(viewsets.ModelViewSet):
+    queryset = pin.objects.all().order_by("startDate").reverse()[:1]
+    serializer_class = PinSerializer
+
+
+class PinCoordViewSet(viewsets.ModelViewSet):
+    queryset = pin.objects.all()
+    serializer_class = PinSerializer
+    filter_backends = [DjangoFilterBackend]
+    filter_class = PinCoordFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -132,8 +171,35 @@ class FlagStoryViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
 
+class FlagCommentViewSet(viewsets.ModelViewSet):
+    queryset = FlagComment.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+        # permissions.IsAuthenticated,
+    ]
+    serializer_class = FlagCommentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'
+
+
 class CommentStoryViewSet(viewsets.ModelViewSet):
-    queryset = commentStory.objects.all()
+
+    queryset = commentStory.objects.annotate(
+        # flagscore=Sum(Case(
+        #     When(flaggerstory__flagged=True, then=1),
+        #     default=Value(0),
+        #     output_field=IntegerField()
+        # )),
+        #updooots=Coalesce(Sum('updotes__upvote'), Value(0))
+        flagscore=Sum(Case(
+            When(flaggingComment__flagged=True, then=1),
+            default=Value(0),
+            output_field=IntegerField()
+        ))
+
+
+    )
+
     permission_classes = [
         permissions.AllowAny
         # permissions.IsAuthenticated,
@@ -165,3 +231,29 @@ class PhotoViewSet(viewsets.ModelViewSet):
         # permissions.IsAuthenticated,
     ]
     serializer_class = PhotoSerializer
+
+
+class PinFlaggedViewSet(viewsets.ModelViewSet):
+    queryset = pin.objects.annotate(
+        # flagscore=Sum(Case(
+        #     When(flaggerstory__flagged=True, then=1),
+        #     default=Value(0),
+        #     output_field=IntegerField()
+        # )),
+        # updooots=Coalesce(Sum('updotes__upvote'), Value(0))
+        flagscore=Sum(Case(
+            When(flaggerstory__flagged=True, then=1),
+            default=Value(0),
+            output_field=IntegerField()
+        ))
+
+    )
+
+    permission_classes = [
+        permissions.AllowAny
+        # permissions.IsAuthenticated,
+    ]
+    serializer_class = PinFlaggedSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'
+    pagination_class = StandardResultsSetPagination

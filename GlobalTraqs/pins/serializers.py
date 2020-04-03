@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo
+from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo, FlagComment
 from django_restql.mixins import DynamicFieldsMixin
 from django.contrib.auth.models import User
 import datetime
@@ -35,9 +35,18 @@ class FlagStorySerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FlagCommentSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = FlagComment
+        fields = '__all__'
+
+
 class CommentStorySerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     username = serializers.CharField(
         source="commenter.username", read_only=True)
+    flaggingComment = FlagCommentSerializer(many=True, read_only=True)
+    flagscore = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = commentStory
@@ -54,9 +63,9 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     categoryImage = serializers.ImageField(
         source="category.image_url",
         read_only=True)
-    #pinsUpvote = serializers.StringRelatedField(many=True)
+    # pinsUpvote = serializers.StringRelatedField(many=True)
     # pinsUpvote = upVoteStorySerializer(many=True, read_only=True)
-    #pinsUpvoted = upVoteStorySerializer(many=True, read_only=True)
+    # pinsUpvoted = upVoteStorySerializer(many=True, read_only=True)
     updooots = serializers.IntegerField(read_only=True)
     flagscore = serializers.IntegerField(read_only=True)
     flaggerstory = FlagStorySerializer(many=True, read_only=True)
@@ -66,6 +75,18 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = pin
         fields = '__all__'
+
+
+class PinFlaggedSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    username = serializers.CharField(
+        source="owner.username", read_only=True)
+    flagscore = serializers.IntegerField(read_only=True)
+    flaggerstory = FlagStorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = pin
+        fields = ['id', 'owner', 'title',
+                  'username', 'flagscore', 'flaggerstory']
 
 
 class PhotoSerializer(serializers.ModelSerializer):

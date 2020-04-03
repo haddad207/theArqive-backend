@@ -1,21 +1,24 @@
 import axios from "axios";
 
 import {
-  GET_PINS,
-  DELETE_PINS,
-  ADD_PIN,
-  EDIT_PIN,
-  GET_PIN,
-  GET_USER,
-  SEARCH_PINS,
-  GET_UPVOTE,
-  ADD_COMMENT,
-  DELETE_COMMENT,
-  GET_PINS_BY_OWNER,
-  GET_PIN_BY_ID,
-  USER_FLAG_PIN,
-  USER_FIRST_UPVOTE,
-  USER_UPVOTE,
+    GET_PINS,
+    DELETE_PINS,
+    ADD_PIN,
+    EDIT_PIN,
+    GET_PIN,
+    GET_USER,
+    SEARCH_PINS,
+    GET_UPVOTE,
+    ADD_COMMENT,
+    DELETE_COMMENT,
+    GET_PINS_BY_OWNER,
+    GET_PIN_BY_ID,
+    USER_FLAG_PIN,
+    USER_FIRST_UPVOTE,
+    USER_UPVOTE,
+    USER_UNFLAG,
+    GET_FLAGGED_PINS,
+    GET_NEXT_FLAGGED_PINS, GET_MAX_PIN, GET_MIN_PIN
 } from "./types";
 
 //GET PINS
@@ -31,15 +34,67 @@ export const getPins = () => dispatch => {
     .catch(err => console.log(err));
 };
 
+export const getPinsWithBounds = (north, south, east, west) => dispatch => {
+    console.log(`/api/pinCoordFilter/?latitude_gte=${south}&latitude_lte=${north}&longitude_gte=${west}&longitude_lte=${east}`);
+    axios
+        .get(`/api/pinCoordFilter/?latitude_gte=${south}&latitude_lte=${north}&longitude_gte=${west}&longitude_lte=${east}`)
+        .then(res => {
+            console.log("pins are");
+            console.log(res.data);
+            dispatch({
+                type: GET_PINS,
+                payload: res.data
+            });
+        })
+        .catch(err => console.log(err));
+};
+
+export const getMinPinDate = () => dispatch => {
+    axios
+        .get(`/api/minPinDate`)
+        .then(res => {
+            console.log(res);
+            let date = res.data[0].startDate.split('-');
+            console.log(date[0] + " " + date[1] + " " + date[2]);
+            let minDate = new Date(date[0], date[1], date[2], 0,  0, 0, 0);
+            console.log("min pin is");
+            console.log(minDate);
+            dispatch({
+                type: GET_MIN_PIN,
+                payload: minDate
+            });
+        })
+        .catch(err => console.log(err));
+};
+
+export const getMaxPinDate = () => dispatch => {
+    axios
+        .get(`/api/maxPinDate`)
+        .then(res => {
+            console.log(res);
+            let date = res.data[0].startDate.split('-');
+            console.log(date[0] + " " + date[1] + " " + date[2]);
+            let maxDate = new Date(date[0], date[1], date[2], 0, 0, 0, 0);
+
+            console.log("max pin is");
+            console.log(maxDate);
+            dispatch({
+                type: GET_MAX_PIN,
+                payload: maxDate
+            });
+        })
+        .catch(err => console.log(err));
+};
+
 export const searchPins = (
   searchQuery,
   categories,
   startDate,
-  endDate,
+  endDate
 ) => dispatch => {
   axios
     .get(
-      `api/pinSearch?search=${searchQuery}&categories=${categories}&startDate_gte=${startDate}&endDate_lte=${endDate}`
+      `api/pinSearch?search=${searchQuery}&categories=${categories}&startDate_gte=${startDate}&startDate_lte=${endDate}`
     )
     .then(res => {
       console.log(res.data);
@@ -64,6 +119,15 @@ export const deletePins = id => dispatch => {
 };
 
 export const addPin = pin => dispatch => {
+  let latitudeSplit = pin.latitude.toString().split(".");
+  let latitude = latitudeSplit[0] + "." + latitudeSplit[1].substring(0, 6);
+  let longitudeSplit = pin.longitude.toString().split(".");
+  let longitude = longitudeSplit[0] + "." + longitudeSplit[1].substring(0, 6);
+  pin.latitude = latitude;
+  pin.longitude = longitude;
+  console.log("lat" + latitude);
+  console.log("long " + longitude);
+
   axios
     .post("/api/pins/", pin)
     .then(res => {
@@ -85,17 +149,22 @@ export const editPin = (pin, id, userid) => dispatch => {
       console.log(res.data);
       let validUser = false;
       let flagstateofuser = false;
+      let userFlaggedBefore = false;
       let upvotedBefore = false;
       let userCurrentUpvote = false;
-      // !!!!!!!!!!!!!!!!!!!!!!!
-      // this causes it to error out and prevents the payload from being used in the reducer
       if (userid) {
-        flagstateofuser = res.data.flaggerstory.some(a => a.flagger === userid);
+        userFlaggedBefore = res.data.flaggerstory.some(
+          a => a.flagger === userid
+        );
         upvotedBefore = res.data.updotes.some(b => b.upVoter === userid);
         if (upvotedBefore)
           userCurrentUpvote = res.data.updotes.filter(
             b => b.upVoter === userid
           )[0].upvote;
+        if (userFlaggedBefore)
+          flagstateofuser = res.data.flaggerstory.filter(
+            a => a.flagger === userid
+          )[0].flagged;
         validUser = true;
         console.log("has this user upvoted before" + upvotedBefore);
       }
@@ -104,8 +173,10 @@ export const editPin = (pin, id, userid) => dispatch => {
         userCurrentUpvote: userCurrentUpvote,
         upvotedBefore: upvotedBefore,
         validUser: validUser,
-        flagState: flagstateofuser
+        flagState: flagstateofuser,
+        userFlaggedBefore: userFlaggedBefore
       };
+
       dispatch({
         type: EDIT_PIN,
         payload: res.data
@@ -124,15 +195,22 @@ export const getPin = (id, userid) => dispatch => {
     .then(res => {
       let validUser = false;
       let flagstateofuser = false;
+      let userFlaggedBefore = false;
       let upvotedBefore = false;
       let userCurrentUpvote = false;
       if (userid) {
-        flagstateofuser = res.data.flaggerstory.some(a => a.flagger === userid);
+        userFlaggedBefore = res.data.flaggerstory.some(
+          a => a.flagger === userid
+        );
         upvotedBefore = res.data.updotes.some(b => b.upVoter === userid);
         if (upvotedBefore)
           userCurrentUpvote = res.data.updotes.filter(
             b => b.upVoter === userid
           )[0].upvote;
+        if (userFlaggedBefore)
+          flagstateofuser = res.data.flaggerstory.filter(
+            a => a.flagger === userid
+          )[0].flagged;
         validUser = true;
         console.log("has this user upvoted before" + upvotedBefore);
       }
@@ -141,7 +219,8 @@ export const getPin = (id, userid) => dispatch => {
         userCurrentUpvote: userCurrentUpvote,
         upvotedBefore: upvotedBefore,
         validUser: validUser,
-        flagState: flagstateofuser
+        flagState: flagstateofuser,
+        userFlaggedBefore: userFlaggedBefore
       };
 
       dispatch({
@@ -202,23 +281,30 @@ export const getPinsByOwner = ownerId => dispatch => {
     .catch(error => console.log(error));
 };
 
-export const userFlagPin = (pin, user, state) => dispatch => {
-  const userflagged = {
-    flagged: true,
-    pinId: pin,
-    flagger: user
-  };
-
+export const userFlagPin = userFlag => dispatch => {
   axios
-    .post(`api/flagStory/`, userflagged)
+    .post(`api/flagStory/`, userFlag)
     .then(res => {
-      const flagData = {
-        ...res.data,
-        flagState: true
-      };
       console.log(res.data);
       dispatch({
         type: USER_FLAG_PIN,
+        payload: res.data
+      });
+    })
+    .catch(error => console.log(error));
+};
+
+export const userUnFlagPin = (id, state) => dispatch => {
+  const userflagged = {
+    flagged: !state
+  };
+
+  axios
+    .patch(`api/flagStory/${id}/`, userflagged)
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: USER_UNFLAG,
         payload: res.data
       });
     })
@@ -257,4 +343,41 @@ export const userUpovte = (id, state) => dispatch => {
       });
     })
     .catch(error => console.log(error));
+};
+
+export const getFlaggedPins = () => dispatch => {
+  axios
+    .get(`api/pinFlagged`)
+    .then(res => {
+      dispatch({
+        type: GET_FLAGGED_PINS,
+        payload: res.data
+      });
+    })
+    .catch(error => console.log(error));
+};
+export const getNextFlaggedPins = link => dispatch => {
+  axios
+    .get(`${link}`)
+    .then(res => {
+      dispatch({
+        type: GET_NEXT_FLAGGED_PINS,
+        payload: res.data
+      });
+    })
+    .catch(error => console.log(error));
+};
+
+export const getPinsById = pinIdArray => dispatch => {
+     axios
+    .get("/api/pins/")
+    .then(res => {
+       let favoritedPins = res.data.pins.filter(pin => pinIdArray.includes(pin.id));
+       console.log(favoritedPins);
+      dispatch({
+        type: GET_PINS,
+        payload: favoritedPins
+      });
+    })
+    .catch(err => console.log(err));
 };

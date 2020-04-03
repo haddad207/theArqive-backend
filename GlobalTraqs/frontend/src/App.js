@@ -1,38 +1,32 @@
 import React, { Component, Fragment } from "react";
-import Header from "./components/layout/HeaderHook";
+import Header from "./components/layout/Header";
 import MapDashboard from "./components/Map/MapDashboard";
-import About from "./components/AboutPage/About";
-import FAQ from "./components/AboutPage/FAQ";
+import About from "./components/Pages/About";
+import FAQ from "./components/Pages/FAQ";
 import {
   HashRouter as Router,
   Switch,
   Route,
   Redirect
 } from "react-router-dom";
-import register from "./components/accounts/register";
+import register from "./components/accounts/Register";
 // if deployed to apache, mess with congig htt file
-import Alerts from "./components/layout/Alerts";
 import { Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { Provider } from "react-redux";
 import store from "./store";
-import login from "./components/accounts/login";
+import login from "./components/accounts/Login";
 import PrivateRoute from "./components/common/PrivateRoute";
 import { loadUser } from "./actions/auth";
-import Story from "./components/Map/StoryTest";
-import { DisplayMap } from "./components/Map/DisplayMap";
+
 import Manage from "./components/AdminMod/Manage";
-import ManageUsers from "./components/AdminMod/ManageUsers";
-import ProfilePage from "./components/profile/ProfilePageHooks";
-import Settings from "./components/profile/SettingsHooks";
-import EditStory from "./components/Map/EditStory";
-import ManageFlag from "./components/AdminMod/ManageFlag";
+import ProfilePage from "./components/profile/ProfilePage";
+import Settings from "./components/profile/ProfileSettings";
+
 import ForgotPassword from "./components/accounts/ForgotPassword";
-import MainStory from "./components/Map/Story/MainStory";
-import AddComment from "./components/Map/AddComment";
-import PinForm from "./components/Map/PinForm";
-import Support from "./components/AboutPage/Support";
-import ResetPassword from "./components/accounts/resetPassword";
+import Support from "./components/Pages/Support";
+import ResetPassword from "./components/accounts/ResetPassword";
+import ContactUs from "./components/Pages/ContactUs";
 const divStyle = {
   position: "relative"
 };
@@ -64,10 +58,16 @@ export class App extends Component {
                 <PrivateRoute exact path="/manage" component={Manage} />
                 <PrivateRoute exact path="/manage/flag" component={Manage} />
                 <PrivateRoute exact path="/manage/users" component={Manage} />
+                <PrivateRoute
+                  exact
+                  path="/manage/comments"
+                  component={Manage}
+                />
                 {/*<Route path="/Story/:id/edit" exact component={EditStory} />*/}
                 <Route path="/forgotPassword" component={ForgotPassword} />
                 <Route path="/resetPassword" component={ResetPassword} />
                 <Route path="/Support" component={Support} />
+                <Route path="/ContactUs" component={ContactUs} />
                 {/* <MapDashboard /> */}
               </Switch>
             </div>
