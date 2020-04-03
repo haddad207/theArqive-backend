@@ -264,11 +264,10 @@ export default function MapDashboard() {
 
 
   return (
-    <div id={"map-dashboard"}>
-      {/*<div>*/}
       <Fragment>
         <Switch>
           <Route exact path="/">
+            <div id={"map-dashboard"}>
             <div id={"sidebar-style"}>
               <SearchSidebar
                 sidebarOpen={sidebarOpen}
@@ -341,10 +340,12 @@ export default function MapDashboard() {
               mapContainerStyle={divStyle1}
               setMapContainerStyle={setMapContainerStyle}
             />
+            </div>
           </Route>
           <Route path="/story">
             <div id={"story-container"}>
             {pinDeleted ? <Redirect to={"/"} /> : null}
+            <div id={"map-dashboard"}>
             <LeafletMap
               maplink={"/story"}
               pins={pins}
@@ -388,6 +389,7 @@ export default function MapDashboard() {
               mapContainerStyle={mapContainerStyle}
               setMapContainerStyle={setMapContainerStyle}
             />
+            </div>
             <StoryDisplay
               placement={placement}
               setplacement={setplacement}
@@ -431,7 +433,6 @@ export default function MapDashboard() {
           {/* <MapDisplay /> */}
         </div>
       </Fragment>
-    </div>
   );
 }
 function StoryDisplay(props) {

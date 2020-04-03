@@ -220,17 +220,17 @@ export default function registerHook() {
                 <p className="text-danger">{userForm.errors["password2"]}</p>
               </div>
               <div className="form-group row justify-content-between justify-content-around">
-                <button type="submit" className="btn btn-primary float-left">
-                  Register
-                </button>
                 {/*This is the ReCaptcha*/}
                 <Recaptcha
-                  className="float-right"
+                  className="float-left"
                   sitekey="6LcAL78UAAAAAPOluo3jzUzXt5XLWKuUujc-_7QX"
                   render="explicit"
                   verifyCallback={verifyCallback}
                   onloadCallback={reCaptchaLoaded}
                 />
+                 <button type="submit" className="btn btn-primary float-right">
+                  Register
+                </button>
               </div>
               <p>
                 Already have an account? <Link to="/login">Login</Link>

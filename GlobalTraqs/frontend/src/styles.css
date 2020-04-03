@@ -188,11 +188,12 @@ b, strong {
 
 #story-page {
   position: absolute;
-  transition: all .5s ease-out;
+  transition: all .75s ease-out;
   background: white;
   height: 100%;
   width: 100%;
   z-index: 2;
+  margin-top: 65px;
 }
 /*#story-container:hover > #story-page {*/
 /*  top: 0;*/
@@ -208,5 +209,5 @@ b, strong {
     position: absolute;
     height: 100%;
     width: 100%;
-    transition: all .5s ease-out;
+    transition: all .75s ease-out;
 }
