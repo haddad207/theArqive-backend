@@ -6,6 +6,7 @@ from datetime import datetime
 from io import BytesIO
 from django.core.files import File
 from django.core.validators import MaxValueValidator, MinValueValidator
+from taggit.managers import TaggableManager
 
 
 class pin(models.Model):
@@ -19,6 +20,9 @@ class pin(models.Model):
         "categoryType", on_delete=models.CASCADE, null=True, related_name='selected_category')
     # 1 is community, 2: historical, 3: personal
     upVotes = models.PositiveSmallIntegerField(default=0)
+    published = models.DateField(auto_now_add=True)
+    slug = models.SlugField(unique=True, max_length=100)
+    tags = TaggableManager()
     startDate = models.DateField('startDate', blank=True, null=True)
     endDate = models.DateField('endDate', blank=True, null=True)
     is_anonymous_pin = models.BooleanField(default=False, blank=False)
