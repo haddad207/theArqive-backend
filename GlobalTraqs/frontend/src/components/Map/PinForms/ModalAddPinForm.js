@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -14,23 +14,35 @@ import InputGroup from "react-bootstrap/InputGroup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TinyMCE from "react-tinymce";
+import axios from "axios";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
 const buttonStyle = {
-  float: "right"
+  float: "right",
 };
 const labelStyle = {
-  marginRight: "10px"
+  marginRight: "10px",
 };
 function ModalAddPinForm(props) {
-
+  const [Tags, setTags] = useState("test,");
 
   var today = new Date();
   const validateAddPinForm = (e) => {
-      e.preventDefault();
-      console.log("validating add pin...");
-      if(props.addPinValues.title && props.addPinValues.description) {
-          props.handleAddPinSubmit();
-      }
+    e.preventDefault();
+    console.log("validating add pin...");
+    if (props.addPinValues.title && props.addPinValues.description) {
+      props.handleAddPinSubmit();
+    }
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let data = JSON.stringify({ tags: Tags });
+    axios.post("api/tags", data, config).then((response) => {
+      console.log(response);
+    });
   };
   return (
     <>
@@ -51,11 +63,10 @@ function ModalAddPinForm(props) {
               <select
                 name="category"
                 value={props.addPinValues.category}
-
-                onChange={e =>
+                onChange={(e) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    category: e.target.value
+                    category: e.target.value,
                   })
                 }
               >
@@ -66,23 +77,30 @@ function ModalAddPinForm(props) {
             </FormGroup>
             <FormGroup>
               <Label for="title">Title</Label>
-              {!props.addPinValues.title ? ( <p className="text-danger">*Please enter a story title</p> ) : null }
+              {!props.addPinValues.title ? (
+                <p className="text-danger">*Please enter a story title</p>
+              ) : null}
               <Input
                 className="form-control"
                 type="text"
                 name="title"
                 value={props.addPinValues.title}
-                onChange={e =>
+                onChange={(e) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    title: e.target.value
+                    title: e.target.value,
                   })
                 }
               />
             </FormGroup>
             <FormGroup>
-              <Label for="description">Description
-                  {!props.addPinValues.description ? ( <p className="text-danger">*Please enter a story description</p> ) : null }
+              <Label for="description">
+                Description
+                {!props.addPinValues.description ? (
+                  <p className="text-danger">
+                    *Please enter a story description
+                  </p>
+                ) : null}
               </Label>
               <TinyMCE
                 content={props.addPinValues.description}
@@ -90,14 +108,29 @@ function ModalAddPinForm(props) {
                   height: 300,
                   fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
                   plugins: "autolink link image lists print preview",
-                  toolbar: "undo redo | bold italic"
+                  toolbar: "undo redo | bold italic",
                 }}
-                onChange={e =>
+                onChange={(e) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    description: e.target.getContent()
+                    description: e.target.getContent(),
                   })
                 }
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Tags:</Label>
+              <Input
+                type="text"
+                data-role="tagsinput"
+                name={"tags"}
+                onChange={(e) =>
+                  props.setaddPinValues({
+                    ...props.addPinValues,
+                    tags: e.target.value,
+                  })
+                }
+                value={Tags}
               />
             </FormGroup>
             <FormGroup>
@@ -107,7 +140,7 @@ function ModalAddPinForm(props) {
               <select
                 name="anonradius"
                 value={props.addPinValues.userRadius}
-                onChange={e => props.setAnonRadius(e.target.value)}
+                onChange={(e) => props.setAnonRadius(e.target.value)}
               >
                 <option value="1">None</option>
                 <option value="2">Minimum</option>
@@ -124,7 +157,7 @@ function ModalAddPinForm(props) {
                 todayButton="Today"
                 name="startDate"
                 selected={props.addPinValues.startDate}
-                onChange={date =>
+                onChange={(date) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
                     startDate: date,
@@ -139,10 +172,10 @@ function ModalAddPinForm(props) {
                 todayButton="Today"
                 name="endDate"
                 selected={props.addPinValues.endDate}
-                onChange={dat =>
+                onChange={(dat) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    endDate: dat
+                    endDate: dat,
                   })
                 }
               />

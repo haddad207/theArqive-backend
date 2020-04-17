@@ -1,9 +1,42 @@
 from django.shortcuts import render, get_object_or_404
 from django.template.defaultfilters import slugify
-
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import pin
 from .forms import PostForm
 from taggit.models import Tag
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+
+
+@api_view(['POST',])
+def setTags(config):
+    data = config.data
+    tags = data['tags']
+    form = PostForm(request.POST)
+    if form.is_valid():
+        newpost = form.save(commit=False)
+        newpost.slug = slugify(newpost.title)
+        newpost.save()
+        form.save_m2m()
+    
+    context = {
+        'form':form,
+    }
+    return context
+    
+    if not tags:
+        return HttpResponse("empty tags")
+
+@api_view(['GET',])
+def getTags():
+    posts = pin.objects.order_by('-published')
+    common_tags = pin.tags.most_common()[:4]
+    context = {
+        'posts':posts,
+        'common_tags':common_tags,
+    }
+    return Json(context, JsonRequestBehavior.AllowGet);
+
 
 def home_view(request):
     posts = pin.objects.order_by('-published')

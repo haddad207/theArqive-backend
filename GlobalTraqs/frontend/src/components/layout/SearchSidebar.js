@@ -17,7 +17,6 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Slider from "@material-ui/core/Slider";
 import { Label } from "reactstrap";
-
 import InputGroup from "react-bootstrap/InputGroup";
 import {
   getUsers,
@@ -46,6 +45,7 @@ function SearchSidebar(props) {
   const pinData = useSelector((state) => state.pins.pins);
   const users = useSelector((state) => state.auth.users);
   const [userSearchText, setUserSearchText] = useState("");
+  const [Tags, setTags] = useState("test,");
 
   const [dateRange, setDateRange] = useState([
     props.minPinDate.getFullYear(),
@@ -142,12 +142,13 @@ function SearchSidebar(props) {
           />
         </div>
         <div class="form-group">
-          <label>Tags</label>
+          <label>Tags:</label>
           <input
             type="text"
             data-role="tagsinput"
-            class="form-control"
-            name="tags"
+            name={"tags"}
+            onChange={(e) => setTags(e.target.value)}
+            value={Tags}
           />
         </div>
         <label>Category: </label>

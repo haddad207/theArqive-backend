@@ -4,6 +4,8 @@ from .api import PinViewSet, CategoryViewSet, upVoteStoryViewSet, FlagStoryViewS
     PinSearchViewSet, FlagCommentViewSet, FaqViewSet, PhotoViewSet, PinFlaggedViewSet, PinCoordViewSet, MinPinDate, \
     MaxPinDate
 from . import views
+from django.conf.urls import url, include
+
 
 router = routers.DefaultRouter()
 router.register('api/pins', PinViewSet, 'pin')
@@ -20,4 +22,15 @@ router.register('api/pinFlagged', PinFlaggedViewSet, 'pinFlag')
 router.register('api/faq', FaqViewSet, 'faqModel')
 router.register('api/flagcomment', FlagCommentViewSet, 'flagcomment')
 router.register('api/photo', PhotoViewSet, 'photo')
-urlpatterns = router.urls
+# router.register('api/tags', views.setTags, 'tags')
+# router.register('api/tags/get', views.getTags, 'get-tags')
+
+urlpatterns = [
+    url(r'^api/tags', views.setTags, name='set-tags'),
+    url(r'^api/tags/get', views.getTags, name='get-tags')
+]
+
+urlpatterns += router.urls
+# urlpatterns = [
+#     path('api/tags', views.setTags, name='tags')
+# ]

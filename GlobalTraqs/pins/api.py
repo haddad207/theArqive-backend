@@ -12,6 +12,13 @@ from django_filters import FilterSet, Filter
 from django_filters.fields import Lookup
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
+from django.template.defaultfilters import slugify
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import pin
+from .forms import PostForm
+from taggit.models import Tag
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
 from .serializers import PinSerializer
 from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
@@ -25,6 +32,26 @@ from rest_framework.generics import RetrieveAPIView
 
 # catalog viewset
 
+@api_view(('POST',))
+def setTagsView(request):
+    data = config.data
+    tags = data['tags']
+    form = PostForm(request.POST)
+    if form.is_valid():
+        newpost = form.save(commit=False)
+        newpost.slug = slugify(newpost.title)
+        newpost.save()
+        form.save_m2m()
+    
+    context = {
+        'posts':posts,
+        'common_tags':common_tags,
+        'form':form,
+    }
+    return context
+    
+    if not tags:
+        return HttpResponse("empty tags")
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
