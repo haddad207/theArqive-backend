@@ -11,9 +11,9 @@ import {
   Label,
 } from "reactstrap";
 import InputGroup from "react-bootstrap/InputGroup";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TinyMCE from "react-tinymce";
+import DatePicker from "react-date-picker";
 import axios from "axios";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -153,11 +153,10 @@ function ModalAddPinForm(props) {
                 Start Date
               </Label>
               <DatePicker
-                isClearable
-                todayButton="Today"
+                format={"MM/dd/yyyy"}
                 name="startDate"
-                selected={props.addPinValues.startDate}
-                onChange={(date) =>
+                value={props.addPinValues.startDate}
+                onChange={date =>
                   props.setaddPinValues({
                     ...props.addPinValues,
                     startDate: date,
@@ -168,14 +167,13 @@ function ModalAddPinForm(props) {
                 &nbsp;&nbsp;&nbsp;End Date
               </Label>
               <DatePicker
-                isClearable
-                todayButton="Today"
+                format={"MM/dd/yyyy"}
                 name="endDate"
-                selected={props.addPinValues.endDate}
-                onChange={(dat) =>
+                value={props.addPinValues.endDate}
+                onChange={date =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    endDate: dat,
+                    endDate: date
                   })
                 }
               />

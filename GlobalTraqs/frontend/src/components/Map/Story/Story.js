@@ -15,6 +15,7 @@ import Flag from "./Flag";
 import Moment from "react-moment";
 import Markup from "interweave";
 import FlagReportModal from "./FlagReportModal";
+import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
 const storyBody = {
   paddingTop: "50px",
@@ -43,9 +44,16 @@ function Story(props) {
     }
   }
 
-  //console.log(pin.flaggerstory);
   return (
     <div className="container-fluid" style={storyBody}>
+      <div style={{ left: "10", position: "absolute", top: "10" }}>
+        <Link
+          onClick={() => props.history.goBack()}
+          // onClick={() => props.setIsLeavingStoryPage(true)}
+        >
+          <KeyboardBackspaceIcon></KeyboardBackspaceIcon>
+        </Link>
+      </div>
       {canManagePin ? (
         <div>
           <div className="admin-moderator-edit">
@@ -53,11 +61,17 @@ function Story(props) {
               type="button"
               className="btn btn-primary btn-sm"
               onClick={(e) => {
+                let start = props.pin.startDate.split("-");
+                start = new Date(start[0], start[1] - 1, start[2], 0, 0, 0, 0);
+                let end = props.pin.endDate.split("-");
+                end = new Date(end[0], end[1] - 1, end[2], 0, 0, 0, 0);
                 props.seteditPin({
                   id: props.pin.id,
                   title: props.pin.title,
                   description: props.pin.description,
                   category: props.pin.category,
+                  startDate: start,
+                  endDate: end,
                 });
                 props.seteditpinmodalState(!props.editpinmodalState);
               }}
@@ -99,7 +113,7 @@ function Story(props) {
       ) : (
         <Link
           style={{ textDecoration: "inherit" }}
-          to={`/users/${props.pin.owner}`}
+          to={`/users/${props.pin.username}`}
         >
           <p>By: {props.pin.username}</p>
         </Link>

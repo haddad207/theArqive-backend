@@ -42,6 +42,8 @@ function SearchSidebar(props) {
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(props.minPinDate);
   const [endDate, setEndDate] = useState(props.maxPinDate);
+  const [minDate, setMinDate] = useState(0);
+  const [maxDate, setMaxDate] = useState(new Date());
   const pinData = useSelector((state) => state.pins.pins);
   const users = useSelector((state) => state.auth.users);
   const [userSearchText, setUserSearchText] = useState("");
@@ -57,6 +59,8 @@ function SearchSidebar(props) {
       props.minPinDate.getFullYear(),
       props.maxPinDate.getFullYear(),
     ]);
+    setMinDate(props.minPinDate.getFullYear());
+    setMaxDate(props.maxPinDate.getFullYear());
   }, [props.minPinDate]);
 
   useEffect(() => {
@@ -64,6 +68,8 @@ function SearchSidebar(props) {
       props.minPinDate.getFullYear(),
       props.maxPinDate.getFullYear(),
     ]);
+    setMinDate(props.minPinDate.getFullYear());
+    setMaxDate(props.maxPinDate.getFullYear());
   }, [props.maxPinDate]);
 
   useEffect(() => {
@@ -79,11 +85,10 @@ function SearchSidebar(props) {
   };
 
   const submitSearch = (e) => {
-    console.log("pin type " + pinType);
+    // console.log("pin type " + pinType);
     e.preventDefault(); //prevents refresh of page
-    console.log(startDate);
-    console.log(endDate);
-    console.log(e);
+    // console.log(startDate);
+    // console.log(endDate);
     const start =
       startDate.getFullYear() +
       "-" +
@@ -102,18 +107,18 @@ function SearchSidebar(props) {
     } else {
       for (const [index, value] of selectedCategories.entries()) {
         if (index < selectedCategories.length - 1) {
-          console.log(value.value);
+          // console.log(value.value);
           categorySearchQuery += value.value + ",";
-          console.log("is the num");
+          // console.log("is the num");
         } else {
-          console.log(value.value);
+          // console.log(value.value);
           categorySearchQuery += value.value;
-          console.log("is the num");
+          // console.log("is the num");
         }
       }
     }
-    console.log(categorySearchQuery);
-    console.log("is the query");
+    // console.log(categorySearchQuery);
+    // console.log("is the query");
     dispatch(searchPins(searchText, categorySearchQuery, start, end));
   };
   const submitUserSearch = (e) => {
@@ -121,10 +126,24 @@ function SearchSidebar(props) {
     dispatch(searchUsers(userSearchText));
   };
   function valuetext(value) {
-    console.log(dateRange);
-    console.log("slider val is " + value);
+    // console.log(dateRange);
+    // console.log("slider val is " + value);
     return value;
   }
+
+  const clearFilters = () => {
+    setSelectedCategories(options);
+    setMinDate(props.minPinDate.getFullYear());
+    setMaxDate(props.maxPinDate.getFullYear());
+    setStartDate(props.minPinDate);
+    setEndDate(props.maxPinDate);
+    setDateRange([
+      props.minPinDate.getFullYear(),
+      props.maxPinDate.getFullYear(),
+    ]);
+    setSearchText("");
+    dispatch(getPins());
+  };
 
   const storySearch = (
     <div style={{ marginTop: "10px" }}>
@@ -168,8 +187,8 @@ function SearchSidebar(props) {
             minDate={
               new Date(
                 props.minPinDate.getFullYear(),
-                props.minPinDate.getMonth(),
-                props.minPinDate.getDate() - 1,
+                props.minPinDate.getMonth() - 1,
+                props.minPinDate.getDate() - 2,
                 0,
                 0,
                 0,
@@ -179,7 +198,7 @@ function SearchSidebar(props) {
             maxDate={
               new Date(
                 props.maxPinDate.getFullYear(),
-                props.maxPinDate.getMonth(),
+                props.maxPinDate.getMonth() - 1,
                 props.maxPinDate.getDate() + 1,
                 0,
                 0,
@@ -194,6 +213,28 @@ function SearchSidebar(props) {
             format={"MM/dd/yyyy"}
           />
           <DatePicker
+            minDate={
+              new Date(
+                props.minPinDate.getFullYear(),
+                props.minPinDate.getMonth() - 1,
+                props.minPinDate.getDate() - 2,
+                0,
+                0,
+                0,
+                0
+              )
+            }
+            maxDate={
+              new Date(
+                props.maxPinDate.getFullYear(),
+                props.maxPinDate.getMonth() - 1,
+                props.maxPinDate.getDate() + 1,
+                0,
+                0,
+                0,
+                0
+              )
+            }
             value={endDate}
             onChange={(date) => {
               setEndDate(date);
@@ -202,12 +243,15 @@ function SearchSidebar(props) {
             format={"MM/dd/yyyy"}
           />
           <Slider
-            min={Number(props.minPinDate.getFullYear())}
-            max={Number(props.maxPinDate.getFullYear())}
+            min={Number(minDate)}
+            max={Number(maxDate)}
+            // min={1000}
+            // max={Number(new Date().getFullYear())}
             value={dateRange}
             valueLabelDisplay="auto"
             onChange={(event, newValue) => {
-              console.log("new value " + newValue);
+              // console.log("props.minPinDate "+ props.minPinDate.getFullYear());
+              // console.log("new value " + newValue);
               setDateRange(newValue);
               startDate.setFullYear(newValue[0]);
               endDate.setFullYear(newValue[1]);
@@ -219,7 +263,7 @@ function SearchSidebar(props) {
           {/*  min={props.minPinYear}*/}
           {/*  max={props.maxPinYear}*/}
           {/*  onChange={(event, newValue) => { setDateRange(newValue);*/}
-          {/*    console.log(event);*/}
+          {/* console.log(event); */}
           {/*    console.log(newValue);}*/}
           {/*  }*/}
           {/*  valueLabelDisplay="auto"*/}
@@ -238,13 +282,21 @@ function SearchSidebar(props) {
           {/*</Label>*/}
           {/*<DatePicker selected={endDate} onChange={date => setEndDate(date)} />*/}
         </InputGroup>
-        <div className="form-group">
+        <div className="form-group" style={{ padding: "20px 20px 20px 20px" }}>
           <button
             type="submit"
             style={{ float: "right" }}
             className="btn btn-primary"
           >
             Search
+          </button>
+          <button
+            type="submit"
+            style={{ float: "right", paddingRight: "20px" }}
+            className="btn btn-primary"
+            onClick={() => clearFilters()}
+          >
+            Clear filters
           </button>
         </div>
       </form>
@@ -261,7 +313,7 @@ function SearchSidebar(props) {
               <Link
                 style={{ textDecoration: "inherit" }}
                 to={`story/${story.id}`}
-                params={{ testvalue: "hello" }}
+                onClick={() => props.centerMarker(story)}
               >
                 <CardActionArea>
                   <CardContent>
@@ -282,8 +334,8 @@ function SearchSidebar(props) {
   );
 
   let resultCount = pinData.length;
-  console.log(props.minPinDate + " is MIN PIN DATE");
-  console.log(dateRange + " is the date range");
+  // console.log(props.minPinDate + " is MIN PIN DATE");
+  // console.log(dateRange + " is the date range");
 
   return (
     <Sidebar
@@ -329,7 +381,7 @@ function SearchSidebar(props) {
         },
       }}
     >
-      {console.log(pinData.length + " is the length")}
+      {/* {console.log(pinData.length + " is the length")} */}
     </Sidebar>
   );
 }
@@ -404,7 +456,10 @@ const ListUsersSearch = (props) => {
       {props.users.map((user, index) => {
         return (
           <Card key={index} style={{ marginTop: "5px" }}>
-            <Link style={{ textDecoration: "inherit" }} to={`users/${user.id}`}>
+            <Link
+              style={{ textDecoration: "inherit" }}
+              to={`users/${user.username}`}
+            >
               <CardActionArea>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import CloseIcon from "@material-ui/icons/Close";
-
 import Sidebar from "react-sidebar";
 import { Link } from "react-router-dom";
 import Card from "@material-ui/core/Card";
@@ -33,7 +32,6 @@ function StorySidebar(props) {
     }
   }
 
-  console.log("SIDE BAR IS " + props.storySidebarOpen);
   if (props.storySidebarOpen) {
     if (props.pins.length == 0) {
       props.setStorySidebarOpen(false);
@@ -62,6 +60,7 @@ function StorySidebar(props) {
                         style={{ textDecoration: "inherit" }}
                         to={`story/${story.options.data.id}`}
                         params={{ testvalue: "hello" }}
+                        onClick={() => props.centerMarker(story)}
                       >
                         <CardActionArea>
                           <CardContent>
@@ -94,8 +93,7 @@ function StorySidebar(props) {
                   ) : (
                     <Link
                       style={{ textDecoration: "inherit" }}
-                      to={`/users/${props.pinData.owner}`}
-                      params={{ testvalue: "hello" }}
+                      to={`/users/${props.pinData.username}`}
                     >
                       By: {props.pinData.username}
                     </Link>
@@ -115,7 +113,10 @@ function StorySidebar(props) {
                 <br />
                 <br />
                 <Markup content={props.pinData.description} />
-                <Link to={`${props.maplink}/${props.pinData.id}`}>
+                <Link
+                  to={`${props.maplink}/${props.pinData.id}`}
+                  onClick={() => props.centerMarker(props.pinData)}
+                >
                   <button type="button" className="btn btn-primary btn-sm">
                     View Story
                   </button>
