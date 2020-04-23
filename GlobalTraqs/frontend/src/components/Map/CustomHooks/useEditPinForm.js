@@ -14,6 +14,7 @@ const useEditPinForm = (pinData, setPinData) => {
     category: "1",
     startDate: new Date(),
     endDate: new Date(),
+    tags: [],
   });
 
   const setEditPinState = (startDate, endDate, pin) => {
@@ -29,6 +30,7 @@ const useEditPinForm = (pinData, setPinData) => {
       category: pin.category,
       startDate: start,
       endDate: end,
+      tags: pin.tags,
     });
     seteditpinmodalState(!editpinmodalState);
   };
@@ -51,6 +53,7 @@ const useEditPinForm = (pinData, setPinData) => {
       category: editPinForm.category,
       startDate: editPinForm.startDate,
       endDate: editPinForm.endDate,
+      tags: editPinForm.tags,
     });
     dispatch(getMaxPinDate());
     dispatch(getMinPinDate());

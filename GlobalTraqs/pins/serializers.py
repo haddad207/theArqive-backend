@@ -3,6 +3,8 @@ from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory,
 from django_restql.mixins import DynamicFieldsMixin
 from django.contrib.auth.models import User
 import datetime
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -52,6 +54,12 @@ class CommentStorySerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         model = commentStory
         fields = '__all__'
 
+class StringListField(serializers.ListField):
+    child = serializers.CharField()
+
+    def to_representation(self, data):
+        return ' '.join(data.values_list('name', flat=True))
+
 
 class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
   #  updoot = serializers.IntegerField()
@@ -71,10 +79,30 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     flaggerstory = FlagStorySerializer(many=True, read_only=True)
     updotes = upVoteStorySerializer(many=True, read_only=True)
     commentstory = CommentStorySerializer(many=True, read_only=True)
+    tags = StringListField()
+    
+    # def create(self, validated_data):
+    #     tags = validated_data.pop('tags')
+    #     instance = super(TagSerializer, self).create(validated_data)
+    #     instance.tags.set(*tags)
+    #     return instance
 
     class Meta:
         model = pin
         fields = '__all__'
+    
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        instance = super(TagSerializer, self).create(validated_data)
+        instance.tags.set(*tags)
+        return instance
+    
+    def update(self,instance, validated_data):
+        tags = validated_data.pop('tags')
+        instance = super(TagSerializer, self).update(validated_data)
+        instance.tags.set(*tags)
+        return instance
+        
 
 
 class PinFlaggedSerializer(DynamicFieldsMixin, serializers.ModelSerializer):

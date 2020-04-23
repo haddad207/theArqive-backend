@@ -94,6 +94,16 @@ function ModalEditPinForm(props) {
                 }
               />
             </FormGroup>
+            <FormGroup>
+              <Label>Tags:</Label>
+              <Input
+                type="text"
+                data-role="tagsinput"
+                name={"tags"}
+                onChange={props.updateEditForm}
+                value={props.userForm.tags}
+              />
+            </FormGroup>
             <InputGroup>
               <label style={labelStyle} for="startDate">
                 Start Date

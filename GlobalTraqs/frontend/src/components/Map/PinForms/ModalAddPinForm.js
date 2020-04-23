@@ -14,9 +14,6 @@ import InputGroup from "react-bootstrap/InputGroup";
 import "react-datepicker/dist/react-datepicker.css";
 import TinyMCE from "react-tinymce";
 import DatePicker from "react-date-picker";
-import axios from "axios";
-axios.defaults.xsrfCookieName = "csrftoken";
-axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
 const buttonStyle = {
   float: "right",
@@ -25,8 +22,6 @@ const labelStyle = {
   marginRight: "10px",
 };
 function ModalAddPinForm(props) {
-  const [Tags, setTags] = useState("test,");
-
   var today = new Date();
   const validateAddPinForm = (e) => {
     e.preventDefault();
@@ -34,15 +29,15 @@ function ModalAddPinForm(props) {
     if (props.addPinValues.title && props.addPinValues.description) {
       props.handleAddPinSubmit();
     }
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    let data = JSON.stringify({ tags: Tags });
-    axios.post("api/tags", data, config).then((response) => {
-      console.log(response);
-    });
+    // const config = {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // };
+    // let data = JSON.stringify({ tags: Tags });
+    // axios.post("api/tags", data, config).then((response) => {
+    //   console.log(response);
+    // });
   };
   return (
     <>
@@ -124,13 +119,13 @@ function ModalAddPinForm(props) {
                 type="text"
                 data-role="tagsinput"
                 name={"tags"}
+                value={props.addPinValues.tags}
                 onChange={(e) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
                     tags: e.target.value,
                   })
                 }
-                value={Tags}
               />
             </FormGroup>
             <FormGroup>
@@ -156,7 +151,7 @@ function ModalAddPinForm(props) {
                 format={"MM/dd/yyyy"}
                 name="startDate"
                 value={props.addPinValues.startDate}
-                onChange={date =>
+                onChange={(date) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
                     startDate: date,
@@ -170,10 +165,10 @@ function ModalAddPinForm(props) {
                 format={"MM/dd/yyyy"}
                 name="endDate"
                 value={props.addPinValues.endDate}
-                onChange={date =>
+                onChange={(date) =>
                   props.setaddPinValues({
                     ...props.addPinValues,
-                    endDate: date
+                    endDate: date,
                   })
                 }
               />

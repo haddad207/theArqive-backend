@@ -20,9 +20,9 @@ class pin(models.Model):
         "categoryType", on_delete=models.CASCADE, null=True, related_name='selected_category')
     # 1 is community, 2: historical, 3: personal
     upVotes = models.PositiveSmallIntegerField(default=0)
-    published = models.DateField(auto_now_add=True)
-    slug = models.SlugField(unique=True, max_length=100)
-    tags = TaggableManager()
+    # published = models.DateField(auto_now_add=True)
+    slug = models.SlugField(max_length=100, allow_unicode=True, blank=True)   
+    tags = TaggableManager(blank=True)
     startDate = models.DateField('startDate', blank=True, null=True)
     endDate = models.DateField('endDate', blank=True, null=True)
     is_anonymous_pin = models.BooleanField(default=False, blank=False)
@@ -30,10 +30,12 @@ class pin(models.Model):
     lastEditDate = models.DateField('lastEditDate', blank=True, null=True)
     lastPersonEdit = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-
     class Meta:
         ordering = ['id']
 
+    def get_tags_display(self):
+        return self.tags.values_list('name', flat=True)
+        
     def __str__(self):
         """String for representing the Model object."""
         return self.title
@@ -57,7 +59,7 @@ class upVoteStory(models.Model):
     pinId = models.ForeignKey(
         "pin", on_delete=models.CASCADE, null=True, related_name='updotes')
     upVoter = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='user_upvoted_stories')
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     upvote = models.BooleanField(default=False)
 
     class Meta:
