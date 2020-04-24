@@ -13,11 +13,11 @@ from django_filters.fields import Lookup
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from .serializers import PinSerializer
-from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
+from pins.models import pin, categoryType, upVoteStory, Tag, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
 from rest_framework import viewsets, permissions
 from .serializers import PinSerializer, CategorySerializer, upVoteStorySerializer, FlagStorySerializer, \
     CommentStorySerializer, AboutUsSerializer, FaqSerializer, PhotoSerializer, PinFlaggedSerializer, \
-    FlagCommentSerializer
+    FlagCommentSerializer, TagSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import RetrieveAPIView
 
@@ -108,16 +108,15 @@ class PinViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
         # permissions.IsAuthenticated,
     ]
-
+    tags = django_filters.ModelMultipleChoiceFilter(
+        queryset=Tag.objects.all(),
+        to_field_name='text',
+        conjoined=True,
+    )
     serializer_class = PinSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = '__all__'
-
-
-    def post_save(self, *args, **kwargs):
-        if 'tags' in self.request.DATA:
-            self.object.tags.set(*self.request.DATA['tags']) 
-        return super(PinViewSet, self).post_save(*args, **kwargs)
+    filterset_fields = '__all__'    
+    
 
 
 class PinSearchViewSet(viewsets.ModelViewSet):
@@ -145,6 +144,9 @@ class PinCoordViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filter_class = PinCoordFilter
 
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = categoryType.objects.all()

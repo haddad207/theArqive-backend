@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo, FlagComment
+from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo, FlagComment, Tag
 from django_restql.mixins import DynamicFieldsMixin
 from django.contrib.auth.models import User
 import datetime
@@ -60,6 +60,16 @@ class StringListField(serializers.ListField):
     def to_representation(self, data):
         return ' '.join(data.values_list('name', flat=True))
 
+class TagSerializer(serializers.ModelSerializer):
+    libraries = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name'
+    )
+
+    class Meta:
+        model = Tag
+        fields = '__all__'
 
 class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
   #  updoot = serializers.IntegerField()
@@ -79,7 +89,11 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     flaggerstory = FlagStorySerializer(many=True, read_only=True)
     updotes = upVoteStorySerializer(many=True, read_only=True)
     commentstory = CommentStorySerializer(many=True, read_only=True)
-    tags = StringListField()
+    tags = serializers.SlugRelatedField(
+        many=True,
+        queryset=Tag.objects.all(),
+        slug_field='text'
+    )
     
     # def create(self, validated_data):
     #     tags = validated_data.pop('tags')

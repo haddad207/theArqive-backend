@@ -126,7 +126,7 @@ DATABASES = {
 
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dblaze',
+        'NAME': 'dblazeIt',
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',

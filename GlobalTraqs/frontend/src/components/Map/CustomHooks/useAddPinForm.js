@@ -18,7 +18,7 @@ const useAddPinForm = (callback) => {
     endDate: new Date(),
     anonradius: 1,
     title: "",
-    tags: [],
+    tags: "test,",
     description: "",
     postDate: new Date(),
     lastEditDate: new Date(),
@@ -34,6 +34,8 @@ const useAddPinForm = (callback) => {
       }
     }
     if (!addPinValues.startDate) {
+    }
+    if (addPinValues.tags) {
     }
 
     const submit = {

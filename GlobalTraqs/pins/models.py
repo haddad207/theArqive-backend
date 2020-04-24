@@ -8,6 +8,17 @@ from django.core.files import File
 from django.core.validators import MaxValueValidator, MinValueValidator
 from taggit.managers import TaggableManager
 
+class Tag(models.Model):
+    """Tag for data. Every tag has unique text.
+    """
+    pinId = models.ForeignKey(
+        "pin", on_delete=models.CASCADE, null=True, related_name='taags')
+    text = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return self.text
+        # return 'Tag[id: {id}, text: {text}]'.format(
+        #     id=self.id, text=self.text)
 
 class pin(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -20,9 +31,7 @@ class pin(models.Model):
         "categoryType", on_delete=models.CASCADE, null=True, related_name='selected_category')
     # 1 is community, 2: historical, 3: personal
     upVotes = models.PositiveSmallIntegerField(default=0)
-    # published = models.DateField(auto_now_add=True)
-    slug = models.SlugField(max_length=100, allow_unicode=True, blank=True)   
-    tags = TaggableManager(blank=True)
+    tags = models.ManyToManyField(Tag, related_name='libraries')
     startDate = models.DateField('startDate', blank=True, null=True)
     endDate = models.DateField('endDate', blank=True, null=True)
     is_anonymous_pin = models.BooleanField(default=False, blank=False)
@@ -32,9 +41,6 @@ class pin(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     class Meta:
         ordering = ['id']
-
-    def get_tags_display(self):
-        return self.tags.values_list('name', flat=True)
         
     def __str__(self):
         """String for representing the Model object."""
