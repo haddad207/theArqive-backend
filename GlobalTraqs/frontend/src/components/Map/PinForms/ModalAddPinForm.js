@@ -14,6 +14,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import "react-datepicker/dist/react-datepicker.css";
 import TinyMCE from "react-tinymce";
 import DatePicker from "react-date-picker";
+// import "../../../../static/frontend/js/bootstrap-tagsinput";
 // import "../../../../static/frontend/js/tagsinput";
 
 const buttonStyle = {
@@ -23,11 +24,21 @@ const labelStyle = {
   marginRight: "10px",
 };
 function ModalAddPinForm(props) {
+  const [Tags, setTags] = useState("");
   var today = new Date();
   const validateAddPinForm = (e) => {
     e.preventDefault();
     console.log("validating add pin...");
-    if (props.addPinValues.tags) {
+    if (Tags) {
+      const tempTags = Tags.split(",");
+      const trimmedTags = tempTags.map((tag) => {
+        return tag.trim();
+      });
+      props.setaddPinValues({
+        ...props.addPinValues,
+        tags: trimmedTags,
+      });
+      console.log(trimmedTags);
     }
     if (props.addPinValues.title && props.addPinValues.description) {
       props.handleAddPinSubmit();
@@ -115,19 +126,16 @@ function ModalAddPinForm(props) {
           </FormGroup>
           <FormGroup>
             <Label>Tags:</Label>
-            <input
-              type="text"
-              data-role="tagsinput"
-              name={"tags"}
-              value={props.addPinValues.tags}
-              onChange={(e) =>
-                props.setaddPinValues({
-                  ...props.addPinValues,
-                  tags: e.target.value,
-                })
-              }
-            />
+            <div class="form-group">
+              <input
+                type="text"
+                data-role="tagsinput"
+                value={Tags}
+                onChange={(e) => setTags(e.target.value)}
+              />
+            </div>
           </FormGroup>
+
           <FormGroup>
             <Label style={labelStyle} for="radius">
               Anonymity radius
@@ -179,6 +187,21 @@ function ModalAddPinForm(props) {
         </Form>
       </ModalBody>
       <ModalFooter>
+        <div className="form-group">
+          <label>Tags:</label>
+          <input
+            type="text"
+            name="tags"
+            data-role="tagsinput"
+            value={props.addPinValues.tags}
+            onChange={(e) =>
+              props.setaddPinValues({
+                ...props.addPinValues,
+                tags: e.target.value,
+              })
+            }
+          />
+        </div>
         {/*<Button color="primary" onClick={props.toggle}>*/}
         {/*  Do Something*/}
         {/*</Button>{" "}*/}

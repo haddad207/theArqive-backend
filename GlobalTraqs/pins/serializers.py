@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo, FlagComment, Tag
+from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, aboutUs, Faq, photo, FlagComment
 from django_restql.mixins import DynamicFieldsMixin
 from django.contrib.auth.models import User
 import datetime
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
+from rest_framework.fields import ListField
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -60,16 +61,32 @@ class StringListField(serializers.ListField):
     def to_representation(self, data):
         return ' '.join(data.values_list('name', flat=True))
 
-class TagSerializer(serializers.ModelSerializer):
-    libraries = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field='name'
-    )
+# class TagSerializer(serializers.ModelSerializer):
+#     tags = serializers.SlugRelatedField(
+#         many=True,
+#         read_only=True,
+#         slug_field='name'
+#     )
 
-    class Meta:
-        model = Tag
-        fields = '__all__'
+
+
+
+#     class Meta:
+#         model = Tag
+#         fields = '__all__'
+
+# class StringArrayField(ListField):
+#     """
+#     String representation of an array field.
+#     """
+#     def to_representation(self, obj):
+#         obj = super().to_representation(self, obj)
+#         # convert list to string
+#         return ",".join([str(element) for element in obj])
+
+#     def to_internal_value(self, data):
+#         data = data.split(",")  # convert string to list
+#         return super().to_internal_value(self, data)
 
 class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
   #  updoot = serializers.IntegerField()
@@ -89,11 +106,12 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     flaggerstory = FlagStorySerializer(many=True, read_only=True)
     updotes = upVoteStorySerializer(many=True, read_only=True)
     commentstory = CommentStorySerializer(many=True, read_only=True)
-    tags = serializers.SlugRelatedField(
-        many=True,
-        queryset=Tag.objects.all(),
-        slug_field='text'
-    )
+    tags = serializers.ListField(child=serializers.CharField())
+    # tags = serializers.SlugRelatedField(
+    #     many=True,
+    #     queryset=Tag.objects.all(),
+    #     slug_field='text'
+    # )
     
     # def create(self, validated_data):
     #     tags = validated_data.pop('tags')
@@ -107,15 +125,17 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     
     def create(self, validated_data):
         tags = validated_data.pop('tags')
-        instance = super(TagSerializer, self).create(validated_data)
+        instance = super(PinSerializer, self).create(validated_data)
         instance.tags.set(*tags)
         return instance
-    
-    def update(self,instance, validated_data):
-        tags = validated_data.pop('tags')
-        instance = super(TagSerializer, self).update(validated_data)
-        instance.tags.set(*tags)
-        return instance
+
+    # def update(self,instance, validated_data):
+    #     tags = validated_data.pop('tags')
+    #     pinInfo = pin.objects.update(**validated_data)
+    #     for tag in tags:
+    #         Tag.objects.update(pinInfo=pinInfo, **tags)
+    #     return pinInfo
+
         
 
 

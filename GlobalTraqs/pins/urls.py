@@ -2,14 +2,13 @@ from django.urls import path
 from rest_framework import routers
 from .api import PinViewSet, CategoryViewSet, upVoteStoryViewSet, FlagStoryViewSet, CommentStoryViewSet, \
     PinSearchViewSet, FlagCommentViewSet, FaqViewSet, PhotoViewSet, PinFlaggedViewSet, PinCoordViewSet, MinPinDate, \
-    MaxPinDate, TagViewSet
+    MaxPinDate
 from . import views
 from django.conf.urls import url, include
 
 
 router = routers.DefaultRouter()
 router.register('api/pins', PinViewSet, 'pin')
-router.register('api/tags', TagViewSet, 'tags')
 # router.register('api/category', CategoryViewSet, 'category')
 router.register('api/category', CategoryViewSet, 'category')
 router.register('api/upVoteStory', upVoteStoryViewSet, 'upvotestory')

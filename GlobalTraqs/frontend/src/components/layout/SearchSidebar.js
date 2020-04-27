@@ -34,13 +34,6 @@ const labelStyle = {
   marginRight: "10px",
 };
 
-const KeyCodes = {
-  comma: 188,
-  enter: 13,
-};
-
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
-
 function SearchSidebar(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pinType, setPinType] = useState(1);
@@ -173,7 +166,7 @@ function SearchSidebar(props) {
           <input
             type="text"
             data-role="tagsinput"
-            onChange={(e) => setTag(e.target.value)}
+            onChange={(e) => setTags(e.target.value)}
             value={Tags}
           />
         </div>

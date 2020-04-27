@@ -107,14 +107,14 @@ WSGI_APPLICATION = 'GlobalTraqs.wsgi.application'
 
 DATABASES = {
     #
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'lbsggtda',
-    #     'USER': 'lbsggtda',
-    #     'PASSWORD': 'XOpmy4Z0BX79r0cOKoD6NIYnhGkKDCl1',
-    #     'HOST': 'salt.db.elephantsql.com',
-    #     'PORT': '5432',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'vngvzwls',
+        'USER': 'vngvzwls',
+        'PASSWORD': 'Va08_uyeUqp8gv_Dtgs1tYRDp4x5BQLg',
+        'HOST': 'drona.db.elephantsql.com',
+        'PORT': '5432',
+    }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #     'NAME': 'ooiarmnn',
@@ -124,10 +124,10 @@ DATABASES = {
     #     'PORT': '5432',
     # }
 
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dblazeIt',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': 'dblazeIt',
+    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #     'NAME': config('NAME'),

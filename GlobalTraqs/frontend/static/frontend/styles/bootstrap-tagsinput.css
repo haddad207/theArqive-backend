@@ -1,3 +1,5 @@
+/* bootstrap-tagsinput.css file - add in local */
+
 .bootstrap-tagsinput {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -12,14 +14,14 @@
   cursor: text;
 }
 .bootstrap-tagsinput input {
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  padding: 0 6px;
-  margin: 0;
-  width: auto;
-  max-width: inherit;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+  padding: 0 6px !important;
+  margin: 0 !important;
+  width: auto !important;
+  max-width: inherit !important;
 }
 .bootstrap-tagsinput.form-control input::-moz-placeholder {
   color: #777;
@@ -37,7 +39,7 @@
 }
 .bootstrap-tagsinput .tag {
   margin-right: 2px;
-  color: rgb(0, 0, 0);
+  color: white;
 }
 .bootstrap-tagsinput .tag [data-role="remove"] {
   margin-left: 8px;

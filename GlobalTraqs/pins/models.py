@@ -7,18 +7,19 @@ from io import BytesIO
 from django.core.files import File
 from django.core.validators import MaxValueValidator, MinValueValidator
 from taggit.managers import TaggableManager
+from django.contrib.postgres.fields import ArrayField
 
-class Tag(models.Model):
-    """Tag for data. Every tag has unique text.
-    """
-    pinId = models.ForeignKey(
-        "pin", on_delete=models.CASCADE, null=True, related_name='taags')
-    text = models.CharField(max_length=64, unique=True)
+# class Tag(models.Model):
+#     """Tag for data. Every tag has unique text.
+#     """
+#     pinId = models.ForeignKey(
+#         "pin", on_delete=models.CASCADE, null=True, related_name='taags')
+#     text = models.CharField(max_length=64, unique=True)
 
-    def __str__(self):
-        return self.text
-        # return 'Tag[id: {id}, text: {text}]'.format(
-        #     id=self.id, text=self.text)
+#     def __str__(self):
+#         return self.text
+#         # return 'Tag[id: {id}, text: {text}]'.format(
+#         #     id=self.id, text=self.text)
 
 class pin(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -31,7 +32,7 @@ class pin(models.Model):
         "categoryType", on_delete=models.CASCADE, null=True, related_name='selected_category')
     # 1 is community, 2: historical, 3: personal
     upVotes = models.PositiveSmallIntegerField(default=0)
-    tags = models.ManyToManyField(Tag, related_name='libraries')
+    tags = ArrayField(models.CharField(max_length=20, blank=True), blank=True, null=True)
     startDate = models.DateField('startDate', blank=True, null=True)
     endDate = models.DateField('endDate', blank=True, null=True)
     is_anonymous_pin = models.BooleanField(default=False, blank=False)

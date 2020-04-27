@@ -13,18 +13,25 @@ from django_filters.fields import Lookup
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from .serializers import PinSerializer
-from pins.models import pin, categoryType, upVoteStory, Tag, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
+from pins.models import pin, categoryType, upVoteStory, flagStory, commentStory, photo, Faq, aboutUs, FlagComment
 from rest_framework import viewsets, permissions
 from .serializers import PinSerializer, CategorySerializer, upVoteStorySerializer, FlagStorySerializer, \
     CommentStorySerializer, AboutUsSerializer, FaqSerializer, PhotoSerializer, PinFlaggedSerializer, \
-    FlagCommentSerializer, TagSerializer
+    FlagCommentSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import RetrieveAPIView
+from django.contrib.postgres.fields import ArrayField
 
 
 # catalog viewset
 
-
+class pinFilter(FilterSet):
+    tag__contains = django_filters.CharFilter(field_name="tags", lookup_expr='icontains')
+    class Meta:
+        model = pin
+        fields = '__all__'
+        exclude = ['tags']
+        
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
@@ -83,7 +90,6 @@ class PinSearchFilter(FilterSet):
     endDate_lte = django_filters.DateTimeFilter(
         field_name="endDate", lookup_expr='lte')
 
-
 class PinViewSet(viewsets.ModelViewSet):
     # queryset = pin.objects.all()
     #   queryset = pin.objects.annotate(
@@ -101,21 +107,31 @@ class PinViewSet(viewsets.ModelViewSet):
             default=Value(0),
             output_field=IntegerField()
         ))
-
     )
-
+    # tag__contains=filters.CharFilter(lookup_expr='icontains1')
     permission_classes = [
         permissions.AllowAny
         # permissions.IsAuthenticated,
     ]
-    tags = django_filters.ModelMultipleChoiceFilter(
-        queryset=Tag.objects.all(),
-        to_field_name='text',
-        conjoined=True,
-    )
+    # tags = django_filters.ModelMultipleChoiceFilter(
+    #     queryset=Tag.objects.all(),
+    #     to_field_name='text',
+    #     conjoined=True,
+    # )
     serializer_class = PinSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = '__all__'    
+    filterset_fields = '__all__'  
+    filter_class = pinFilter
+
+    filter_overrides = {
+        ArrayField: {
+            'filter_class': django_filters.CharFilter(lookup_expr='icontains'),
+            'extra': lambda f: {
+                'lookup_expr': 'icontains',
+            }
+        }
+    }  
+    
     
 
 
@@ -144,9 +160,9 @@ class PinCoordViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filter_class = PinCoordFilter
 
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
+# class TagViewSet(viewsets.ModelViewSet):
+#     queryset = Tag.objects.all()
+#     serializer_class = TagSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = categoryType.objects.all()

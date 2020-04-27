@@ -18,7 +18,7 @@ const useAddPinForm = (callback) => {
     endDate: new Date(),
     anonradius: 1,
     title: "",
-    tags: "test,",
+    tags: [],
     description: "",
     postDate: new Date(),
     lastEditDate: new Date(),
