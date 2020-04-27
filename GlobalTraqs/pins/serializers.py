@@ -88,6 +88,27 @@ class StringListField(serializers.ListField):
 #         data = data.split(",")  # convert string to list
 #         return super().to_internal_value(self, data)
 
+# class StringArrayField(ListField):
+#     """
+#     String representation of an array field.
+#     """
+#     def to_representation(self, obj):
+#         obj = super().to_representation(obj)
+#         # convert list to string
+#         return ",".join([str(element) for element in obj])
+        
+#     def to_internal_value(self, data):
+#         data = data.split(",") 
+#         # convert string to list
+# #         return super().to_internal_value(self, data)
+# class StringArrayField(ListField):
+#     def to_representation(self, obj):
+#         obj = super().to_representation(obj)
+#         return ",".join([str(element) for element in obj])
+    # def to_internal_value(self, data):
+    #     data = data.split(",")
+    #     return super().to_internal_value(self, data)
+
 class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
   #  updoot = serializers.IntegerField()
 
@@ -123,11 +144,11 @@ class PinSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         model = pin
         fields = '__all__'
     
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        instance = super(PinSerializer, self).create(validated_data)
-        instance.tags.set(*tags)
-        return instance
+    # def create(self, validated_data):
+    #     tags = validated_data.pop('tags')
+    #     instance = super(PinSerializer, self).create(validated_data)
+    #     instance.tags.set(*tags)
+    #     return instance
 
     # def update(self,instance, validated_data):
     #     tags = validated_data.pop('tags')
