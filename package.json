@@ -55,7 +55,7 @@
     "leaflet.markercluster": "^1.4.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "nodemailer": "^6.3.1",
+    "nodemailer": "^6.4.16",
     "path-to-regexp": "^5.0.0",
     "paypal-checkout": "^4.0.311",
     "query-string": "^6.9.0",
